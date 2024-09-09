@@ -38,7 +38,7 @@ end
 
 STAT.bar.Ex = Exbar; 
 STAT.bar.Sx = Sx_bar;    
-STAT.bar.USi = diag(truss.L.*truss.A)*Wb;c
+STAT.bar.USi = diag(truss.L.*truss.A)*Wb;
 STAT.bar.US = sum(STAT.bar.USi,1);
 
 STAT.fold.Angle = FdAngle;

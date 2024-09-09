@@ -46,7 +46,7 @@ for del = 1:size(angles.bend,1)
     pstr_p_bend = state2_bend(del);
     % [~,Rpe,Kpe] = FoldKe(Nodenw,bend,angles.Kb,angles.pb0(del),Lbend(del),angles.CMbend);
     [~,Rpe,Kpe,harden_bend,pstr_p_bend] = FoldKe_pl(Nodenw,bend,angles.Kb(del), ...
-        angles.pb0(del),Lbend(del),harden_bend,pstr_p_bend,angles.ydb(del),angles.pmb(del),del,icrm);
+        angles.pb0(del),Lbend(del),harden_bend,pstr_p_bend,angles.ydb(del),angles.pmb(del));
     state1_bend(del)=harden_bend;
     state2_bend(del)=pstr_p_bend;
     IFp(eDof) = IFp(eDof)+Rpe;
@@ -70,7 +70,7 @@ for fel = 1:size(angles.fold,1)
     pstr_p_fold = state2_fold(fel);
     % [~,Rpe,Kpe] = FoldKe(Nodenw,fold,angles.Kf,angles.pf0(fel),Lfold(fel),angles.CMfold);
     [~,Rpe,Kpe,harden_fold,pstr_p_fold] = FoldKe_pl(Nodenw,fold,angles.Kf(fel), ...
-        angles.pf0(fel),Lfold(fel),harden_fold,pstr_p_fold,angles.ydf(fel),angles.pmf(fel),fel,icrm);
+        angles.pf0(fel),Lfold(fel),harden_fold,pstr_p_fold,angles.ydf(fel),angles.pmf(fel));
     state1_fold(fel) = harden_fold;
     state2_fold(fel) = pstr_p_fold;
     IFp(eDof) = IFp(eDof)+Rpe;

@@ -92,20 +92,20 @@ truss.U0 = zeros(3*size(truss.Node,1),1);
 % Postprocess output data
 Uhis = real(Uhis);
 Fhis = real(Fhis);
-% STAT = PostProcess(Uhis,truss,angles); 
+STAT = PostProcess(Uhis,truss,angles); 
 
 %% Visualize simulation
 instdof = [indp,3];
 interv = 1; endicrm = size(Uhis,2);
 % Animation monitoring node-wise change
-% VIntensityDataInten = zeros(size(truss.Node,1),size(Uhis,2));
-% IntensityDataM = bsxfun(@times,STAT.bar.Sx,truss.A);
-% for k = 1:size(Uhis,2)
-%     IntensityDataIntenk = sparse(truss.Bars(:,1),truss.Bars(:,2),abs(IntensityDataM(:,k)),size(truss.Node,1),size(truss.Node,1));
-%     VIntensityDataInten(:,k) = sum((IntensityDataIntenk+IntensityDataIntenk'),2); 
-% end
-% VisualFold(Uhis(:,1:interv:endicrm),truss,angles,Fhis(1:interv:endicrm,:),instdof,'IntensityMap','Vertex','IntensityData',VIntensityDataInten)
-VisualFold(Uhis(:,1:interv:endicrm),truss,angles,Fhis(1:interv:endicrm,:),instdof)
+VIntensityDataInten = zeros(size(truss.Node,1),size(Uhis,2));
+IntensityDataM = bsxfun(@times,STAT.bar.Sx,truss.A);
+for k = 1:size(Uhis,2)
+    IntensityDataIntenk = sparse(truss.Bars(:,1),truss.Bars(:,2),abs(IntensityDataM(:,k)),size(truss.Node,1),size(truss.Node,1));
+    VIntensityDataInten(:,k) = sum((IntensityDataIntenk+IntensityDataIntenk'),2); 
+end
+VisualFold(Uhis(:,1:interv:endicrm),truss,angles,Fhis(1:interv:endicrm,:),instdof,'IntensityMap','Vertex','IntensityData',VIntensityDataInten)
+% VisualFold(Uhis(:,1:interv:endicrm),truss,angles,Fhis(1:interv:endicrm,:),instdof)
 grid on
 % VisualFold(Uhis(:,1:interv:endicrm),truss,angles,'none','miura5x5ptd',0.0001,LF_his,instdof,[-inf inf -inf inf])
 % Animation monitoring panel-wise value change

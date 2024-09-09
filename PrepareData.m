@@ -131,8 +131,8 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
         angles.ydb = AnalyInputOpt.BendConst(2)*ones(1,size(Bend,1));
         angles.pmf = AnalyInputOpt.FoldConst(3)*ones(1,size(Fold,1));
         angles.pmb = AnalyInputOpt.BendConst(3)*ones(1,size(Bend,1));
-        angles.CMbend = @(he, h0, kb, L0)ElastoPlasticityHinge(he, h0, kb, L0, angles.pb0, 0, angles.ydb, angles.pmb, del, icrm);
-        angles.CMfold = @(he, h0, kf, L0)ElastoPlasticityHinge(he, h0, kf, L0, angles.pf0, 0, angles.ydf, angles.pmf, del, icrm);
+        angles.CMbend = @(he, h0, kb, L0)ElastoPlasticityHinge(he, h0, kb, L0, angles.pb0, 0, angles.ydb, angles.pmb);
+        angles.CMfold = @(he, h0, kf, L0)ElastoPlasticityHinge(he, h0, kf, L0, angles.pf0, 0, angles.ydf, angles.pmf);
     else
         disp('Wrong Material Type!')
     end

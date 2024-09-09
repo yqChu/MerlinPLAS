@@ -1,4 +1,4 @@
-function [he,Rhe,Khe,harden_fold,pstr_p_fold] = FoldKe_pl(Cood, List, kpi, h0, L0, harden_fold, pstr_p_fold, yield_fold, pl_mod_fold,del, icrm)
+function [he,Rhe,Khe,harden_fold,pstr_p_fold] = FoldKe_pl(Cood, List, kpi, h0, L0, harden_fold, pstr_p_fold, yield_fold, pl_mod_fold)
 rkj = [Cood(List(2),:)-Cood(List(1),:)]'; 
 rij = [Cood(List(3),:)-Cood(List(1),:)]'; 
 rkl = [Cood(List(2),:)-Cood(List(4),:)]'; 
@@ -12,7 +12,7 @@ end;
 
 if nargin > 4
 % [Rspr, Kspr] = CM(he,h0,kpi,L0);
-[Rspr, Kspr, Espr, harden_fold, pstr_p_fold] = ElastoPlasticityHinge(he, h0, kpi, L0, harden_fold, pstr_p_fold, yield_fold,pl_mod_fold,del,icrm);
+[Rspr, Kspr, Espr, harden_fold, pstr_p_fold] = ElastoPlasticityHinge(he, h0, kpi, L0, harden_fold, pstr_p_fold, yield_fold,pl_mod_fold);
 
 if nargout>1
     di = norm(rkj)/(rmj'*rmj)*rmj;
