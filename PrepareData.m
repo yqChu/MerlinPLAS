@@ -7,15 +7,9 @@ function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,Analy
 %     'Abar': Area of bars (manual mode)
 %     'RotSprBend': Constitutive model of bending elements (manual mode)
 %     'RotSprFold': Constitutive model of folding elements (manual mode)
-%     'BendElastic': Elastic rotational stiffness of bending hinges
-%     'FoldElastic': Elastic rotational stiffness of folding hinges
-%     'BarElastic': Modulus of Elasticity of bar material
-%     'BendYield': Yield force of bending hinges 
-%     'FoldYield': Yield force of folding hinges
-%     'BendPlastic': Plastic rotational stiffness of bending hinges
-%     'FoldPlastic': Plastic rotational stiffness of folding hinges
-%     'BarYield': Yield force of bar material
-%     'BarPlastic': Modulus of Plasticity of bar material
+%     'BarConst': Parameters of bar material, [Modulus of elasticity, Yield force, Modulus of plasticity]
+%     'FoldConst': Parameters of fold hinges, [Elastic rotational stiffness, Yield force, Plastic rotational stiffness]
+%     'BendConst': Parameters of bend hinges, [Elastic rotational stiffness, Yield force, Plastic rotational stiffness]
 %     'Poisson': Poisson's ratio
 %     'Thickness': Panel thickness
 %     'LScaleFactor': Ratio of length scale factor (Ls) over hinge length LF
@@ -91,12 +85,12 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
         for i = 1:size(Bend,1), pb0(i) = FoldKe(Node,Bend(i,:)); end
     end
     
-    kpb = getfieldvalues(AnalyInputOpt,'Kb',0.1);
+    kpb = AnalyInputOpt.BendConst(1);
     if (size(kpb,1)==1)&&(size(Bend,1)>1)
         kpb = repmat(kpb,size(Bend,1),1);
     end
     
-    kpf = getfieldvalues(AnalyInputOpt,'Kf',0.1*kpb(1));
+    kpf = AnalyInputOpt.FoldConst(1);
     if (size(kpf,1)==1)&&(size(Fold,1)>1)
         kpf = repmat(kpf,size(Fold,1),1);
     end
@@ -123,19 +117,19 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
     angles.CMfold = getfieldvalues(AnalyInputOpt,'RotSprFold',@(he,h0,kf,L0)EnhancedLinear(he,h0,kf,L0,45,315));
     angles.fold = Fold;
     angles.bend = Bend;
-    angles.Kb = kpb;
-    angles.Kf = kpf;
     angles.pf0 = pf0;
     angles.pb0 = pb0;
     angles.Panel = Panel;
+    angles.Kb = kpb;
+    angles.Kf = kpf;
     if strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
-        truss.EMod = AnalyInputOpt.BarElastic*ones(1, size(Bars,1));
-        truss.YBar = AnalyInputOpt.BarYield*ones(1, size(Bars,1));
-        truss.PMod = AnalyInputOpt.BarPlastic*ones(1, size(Bars,1));
-        angles.ydf = AnalyInputOpt.FoldYield*ones(1, size(Fold,1));
-        angles.ydb = AnalyInputOpt.BendYield*ones(1, size(Bend,1));
-        angles.pmf = AnalyInputOpt.FoldPlastic*ones(1,size(Fold,1));
-        angles.pmb = AnalyInputOpt.BendPlastic*ones(1,size(Bend,1));
+        truss.EMod = AnalyInputOpt.BarConst(1)*ones(1,size(Bars,1));
+        truss.YBar = AnalyInputOpt.BarConst(2)*ones(1,size(Bars,1));
+        truss.PMod = AnalyInputOpt.BarConst(3)*ones(1,size(Bars,1));
+        angles.ydf = AnalyInputOpt.FoldConst(2)*ones(1,size(Fold,1));
+        angles.ydb = AnalyInputOpt.BendConst(2)*ones(1,size(Bend,1));
+        angles.pmf = AnalyInputOpt.FoldConst(3)*ones(1,size(Fold,1));
+        angles.pmb = AnalyInputOpt.BendConst(3)*ones(1,size(Bend,1));
     end
 
 
@@ -187,13 +181,13 @@ elseif strcmpi(AnalyInputOpt.ModelType,'N5B8')
     angles.pb0 = pb0;
     angles.Panel = Panel;
     if strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
-        truss.EMod = AnalyInputOpt.BarElastic*ones(1, size(Bars,1));
-        truss.YBar = AnalyInputOpt.BarYield*ones(1, size(Bars,1));
-        truss.PMod = AnalyInputOpt.BarPlastic*ones(1, size(Bars,1));
-        angles.ydf = AnalyInputOpt.FoldYield*ones(1, size(Fold,1));
-        angles.ydb = AnalyInputOpt.BendYield*ones(1, size(Bend,1));
-        angles.pmf = AnalyInputOpt.FoldPlastic*ones(1,size(Fold,1));
-        angles.pmb = AnalyInputOpt.BendPlastic*ones(1,size(Bend,1));
+        truss.EMod = AnalyInputOpt.BarConst(1)*ones(1,size(Bars,1));
+        truss.YBar = AnalyInputOpt.BarConst(2)*ones(1,size(Bars,1));
+        truss.PMod = AnalyInputOpt.BarConst(3)*ones(1,size(Bars,1));
+        angles.ydf = AnalyInputOpt.FoldConst(2)*ones(1,size(Fold,1));
+        angles.ydb = AnalyInputOpt.BendConst(2)*ones(1,size(Bend,1));
+        angles.pmf = AnalyInputOpt.FoldConst(3)*ones(1,size(Fold,1));
+        angles.pmb = AnalyInputOpt.BendConst(3)*ones(1,size(Bend,1));
     end
 
 
