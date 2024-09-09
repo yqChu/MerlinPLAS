@@ -7,9 +7,9 @@ function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,Analy
 %     'Abar': Area of bars (manual mode)
 %     'RotSprBend': Constitutive model of bending elements (manual mode)
 %     'RotSprFold': Constitutive model of folding elements (manual mode)
-%     'BarConst': Parameters of bar material, [Modulus of elasticity, Yield force, Modulus of plasticity]
-%     'FoldConst': Parameters of fold hinges, [Elastic rotational stiffness, Yield force, Plastic rotational stiffness]
-%     'BendConst': Parameters of bend hinges, [Elastic rotational stiffness, Yield force, Plastic rotational stiffness]
+%     'BarConst': Parameters in constitutive relation of bar material, [Modulus of elasticity, Yield force, Modulus of plasticity]
+%     'FoldConst': Parameters of constitutive relation fold hinges, [Elastic rotational stiffness, Yield force, Plastic rotational stiffness]
+%     'BendConst': Parameters of constitutive relation bend hinges, [Elastic rotational stiffness, Yield force, Plastic rotational stiffness]
 %     'Poisson': Poisson's ratio
 %     'Thickness': Panel thickness
 %     'LScaleFactor': Ratio of length scale factor (Ls) over hinge length LF
@@ -113,8 +113,6 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
     truss.L = L;
     truss.FixedDofs = unique(rs);
     truss.A = Abar;
-    angles.CMbend = getfieldvalues(AnalyInputOpt,'RotSprBend',@(he,h0,kb,L0)EnhancedLinear(he,h0,kb,L0,45,315));
-    angles.CMfold = getfieldvalues(AnalyInputOpt,'RotSprFold',@(he,h0,kf,L0)EnhancedLinear(he,h0,kf,L0,45,315));
     angles.fold = Fold;
     angles.bend = Bend;
     angles.pf0 = pf0;
@@ -122,7 +120,10 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
     angles.Panel = Panel;
     angles.Kb = kpb;
     angles.Kf = kpf;
-    if strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
+    if strcmpi(AnalyInputOpt.MatType, 'Hyperelastic')
+        angles.CMbend = getfieldvalues(AnalyInputOpt,'RotSprBend',@(he,h0,kb,L0)EnhancedLinear(he,h0,kb,L0,45,315));
+        angles.CMfold = getfieldvalues(AnalyInputOpt,'RotSprFold',@(he,h0,kf,L0)EnhancedLinear(he,h0,kf,L0,45,315));
+    elseif strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
         truss.EMod = AnalyInputOpt.BarConst(1)*ones(1,size(Bars,1));
         truss.YBar = AnalyInputOpt.BarConst(2)*ones(1,size(Bars,1));
         truss.PMod = AnalyInputOpt.BarConst(3)*ones(1,size(Bars,1));
@@ -130,6 +131,10 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
         angles.ydb = AnalyInputOpt.BendConst(2)*ones(1,size(Bend,1));
         angles.pmf = AnalyInputOpt.FoldConst(3)*ones(1,size(Fold,1));
         angles.pmb = AnalyInputOpt.BendConst(3)*ones(1,size(Bend,1));
+        angles.CMbend = @(he, h0, kb, L0)ElastoPlasticityHinge(he, h0, kb, L0, angles.pb0, 0, angles.ydb, angles.pmb, del, icrm);
+        angles.CMfold = @(he, h0, kf, L0)ElastoPlasticityHinge(he, h0, kf, L0, angles.pf0, 0, angles.ydf, angles.pmf, del, icrm);
+    else
+        disp('Wrong Material Type!')
     end
 
 
