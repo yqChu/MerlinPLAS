@@ -1,4 +1,4 @@
-function [F] = LoadFun0(Node,U,icrm)
+function [F] = LoadFun(Node,U,icrm)
 %% Compute current configuration 
 Nodenw = Node;
 Nodenw(:,1) = Node(:,1)+U(1:3:end);

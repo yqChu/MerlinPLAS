@@ -21,9 +21,8 @@ for bel = 1:size(truss.Bars,1)
     %     crease_flag = 1;
     % end
     %===================================
-    [~,Rbe,Kbe,harden,pstr_p] = BarKe(Ui(eDof),truss.B(bel,eDof),truss.L(bel),truss.A(bel),harden,pstr_p,truss.EMod(bel),truss.YBar(bel),truss.PMod(bel));
-    % [~,Rbe,Kbe] = BarKe(Ui(eDof),truss.B(bel,eDof),truss.L(bel),truss.A(bel), iter);
-     %[~,Rbe,Kbe,harden,pstr_p] = BarKe(Ui(eDof),truss.B(bel,eDof),truss.L(bel),truss.CM,truss.A(bel),harden,pstr_p);
+    [~,Rbe,Kbe,harden,pstr_p] = BarKe(Ui(eDof),truss.B(bel,eDof), ...
+        truss.L(bel),truss.A(bel),harden,pstr_p,truss.EMod(bel),truss.YBar(bel),truss.PMod(bel));
     state1(bel)= harden;
     state2(bel)= pstr_p;
     %===================================

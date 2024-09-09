@@ -1,4 +1,4 @@
-function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,AnalyInputOpt,EMod,YBar,PMod,ydf,ydb,pl_mod_fold,pl_mod_bend)
+function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,AnalyInputOpt)
 % function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,AnalyInputOpt)
 % AnalyInputOpt contains the following fields:
 %     'ModelType': 'N4B5' or 'N5B8'
@@ -7,9 +7,15 @@ function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,Analy
 %     'Abar': Area of bars (manual mode)
 %     'RotSprBend': Constitutive model of bending elements (manual mode)
 %     'RotSprFold': Constitutive model of folding elements (manual mode)
-%     'Kb': Initial modulus of bending hinges
-%     'Kf': Initial modulus of folding hinges
-%     'ModElastic': Modulus of Elasticy of bar material
+%     'BendElastic': Elastic rotational stiffness of bending hinges
+%     'FoldElastic': Elastic rotational stiffness of folding hinges
+%     'BarElastic': Modulus of Elasticity of bar material
+%     'BendYield': Yield force of bending hinges 
+%     'FoldYield': Yield force of folding hinges
+%     'BendPlastic': Plastic rotational stiffness of bending hinges
+%     'FoldPlastic': Plastic rotational stiffness of folding hinges
+%     'BarYield': Yield force of bar material
+%     'BarPlastic': Modulus of Plasticity of bar material
 %     'Poisson': Poisson's ratio
 %     'Thickness': Panel thickness
 %     'LScaleFactor': Ratio of length scale factor (Ls) over hinge length LF
@@ -17,6 +23,7 @@ function [truss, angles, AnalyInputOpt] = PrepareData(Node,Panel,Supp,Load,Analy
 %                 'Flat' - enforce neutral angle at pi (flat configuration)
 %                  value - provide specific values, scalar for uniform
 %                  assignment, vector for differential assignment 
+%     'MatType': 'Hyperelastic' or 'Elasto-Plastic'
 %     'LoadType': 'Force' or 'Displacement'
 %     'Load': Loading condition
 %     'AdaptiveLoad': Function handle for adaptive loading
@@ -31,6 +38,10 @@ end
 
 if ~isfield(AnalyInputOpt,'ModelType')
     AnalyInputOpt.ModelType = 'N5B8';
+end
+
+if ~isfield(AnalyInputOpt,'MatType')
+    AnalyInputOpt.MatType = 'Hyperelastic';
 end
 
 if ~isfield(AnalyInputOpt,'LoadType')
@@ -108,9 +119,6 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
     truss.L = L;
     truss.FixedDofs = unique(rs);
     truss.A = Abar;
-    truss.EMod = EMod*ones(1, size(Bars,1));
-    truss.YBar = YBar*ones(1, size(Bars,1));
-    truss.PMod = PMod*ones(1, size(Bars,1));
     angles.CMbend = getfieldvalues(AnalyInputOpt,'RotSprBend',@(he,h0,kb,L0)EnhancedLinear(he,h0,kb,L0,45,315));
     angles.CMfold = getfieldvalues(AnalyInputOpt,'RotSprFold',@(he,h0,kf,L0)EnhancedLinear(he,h0,kf,L0,45,315));
     angles.fold = Fold;
@@ -120,11 +128,17 @@ if strcmpi(AnalyInputOpt.ModelType,'N4B5')
     angles.pf0 = pf0;
     angles.pb0 = pb0;
     angles.Panel = Panel;
-    angles.ydf = ydf*ones(1, size(Fold,1)); % yield force
-    angles.ydb = ydb*ones(1, size(Bend,1));
-    angles.pmf = pl_mod_fold*ones(1,size(Fold,1)); % plastic modulus
-    angles.pmb = pl_mod_bend*ones(1,size(Bend,1));
-    
+    if strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
+        truss.EMod = AnalyInputOpt.BarElastic*ones(1, size(Bars,1));
+        truss.YBar = AnalyInputOpt.BarYield*ones(1, size(Bars,1));
+        truss.PMod = AnalyInputOpt.BarPlastic*ones(1, size(Bars,1));
+        angles.ydf = AnalyInputOpt.FoldYield*ones(1, size(Fold,1));
+        angles.ydb = AnalyInputOpt.BendYield*ones(1, size(Bend,1));
+        angles.pmf = AnalyInputOpt.FoldPlastic*ones(1,size(Fold,1));
+        angles.pmb = AnalyInputOpt.BendPlastic*ones(1,size(Bend,1));
+    end
+
+
 elseif strcmpi(AnalyInputOpt.ModelType,'N5B8')
     [Bend, Node, panelctr] = findbend(Panel, Node, AnalyInputOpt.ModelType);
     [Fold, Bdry, Trigl] = findfdbd(Panel,Bend);
@@ -172,10 +186,16 @@ elseif strcmpi(AnalyInputOpt.ModelType,'N5B8')
     angles.pf0 = pf0;
     angles.pb0 = pb0;
     angles.Panel = Panel;
-    angles.ydf = ydf*ones(1, size(Fold,1)); % yield force
-    angles.ydb = ydf*ones(1, size(Bend,1));
-    angles.pmf = pl_mod_fold*ones(1,size(Fold,1)); % plastic modulus
-    angles.pmb = pl_mod_bend*ones(1,size(Bend,1));
+    if strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
+        truss.EMod = AnalyInputOpt.BarElastic*ones(1, size(Bars,1));
+        truss.YBar = AnalyInputOpt.BarYield*ones(1, size(Bars,1));
+        truss.PMod = AnalyInputOpt.BarPlastic*ones(1, size(Bars,1));
+        angles.ydf = AnalyInputOpt.FoldYield*ones(1, size(Fold,1));
+        angles.ydb = AnalyInputOpt.BendYield*ones(1, size(Bend,1));
+        angles.pmf = AnalyInputOpt.FoldPlastic*ones(1,size(Fold,1));
+        angles.pmb = AnalyInputOpt.BendPlastic*ones(1,size(Bend,1));
+    end
+
 
     MaterCalib = getfieldvalues(AnalyInputOpt,'MaterCalib','auto');
     if strcmpi(MaterCalib,'manual')

@@ -4,14 +4,18 @@ Node = truss.Node;
 if ~isfield(truss,'U0'), truss.U0 = zeros(3*size(truss.Node,1),1); end  
 U = truss.U0;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-state1=zeros(1,size(truss.Bars,1));
-state2=ones(1,size(truss.Bars,1));
-state1_bend = zeros(1,size(angles.bend,1));
-state2_bend = angles.pb0;
-state1_fold = zeros(1,size(angles.fold,1));
-state2_fold = angles.pf0;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmpi(AnalyInputOpt.MatType, 'Hyperelastic')
+    
+elseif strcmpi(AnalyInputOpt.MatType, 'Elasto-Plastic')
+    pstr_p=zeros(1,size(truss.Bars,1));
+    harden=ones(1,size(truss.Bars,1));
+    he_pl_bend = zeros(1,size(angles.bend,1));
+    harden_bend = angles.pb0;
+    he_pl_fold = zeros(1,size(angles.fold,1));
+    harden_fold = angles.pf0;
+else
+    disp("Unknown Material Type!")
+end
 
 if strcmpi(AnalyInputOpt.LoadType, 'Force')
     MaxIcr = AnalyInputOpt.MaxIcr;
@@ -32,11 +36,12 @@ if strcmpi(AnalyInputOpt.LoadType, 'Force')
         end
         while err>tol && iter<MaxIter
             iter = iter+1; 
-            % =============================================================
-            [IF,K,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold] = ...
-            GlobalK_edu_ver(U,Node,truss,angles,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold,iter,icrm);
-            % =============================================================
-            % [IF,K] = GlobalK_edu_ver(U,Node,truss,angles);
+            if strcmpi(AnalyInputOpt.MatType, 'Hyperelastic')
+                [IF,K] = GlobalK_fast_ver(U,Node,truss,angles);
+            else
+                [IF,K,pstr_p,harden,he_pl_bend,harden_bend,he_pl_fold,harden_fold] = ...
+                GlobalK_edu_ver(U,Node,truss,angles,pstr_p,harden,he_pl_bend,harden_bend,he_pl_fold,harden_fold,iter,icrm);
+            end
             R = lmd*F-IF;   MRS = [F,R];
             MUL(FreeDofs,:) = K(FreeDofs,FreeDofs)\MRS(FreeDofs,:);
             dUp = MUL(:,1); dUr = MUL(:,2);
@@ -98,11 +103,14 @@ elseif strcmpi(AnalyInputOpt.LoadType, 'Displacement')
         U(truss.FixedDofs)=0;
         while err>tol && iter<MaxIter
             iter = iter+1;
+            if strcmpi(AnalyInputOpt.MatType, 'Hyperelastic')
+                [IF,K]=GlobalK_fast_ver(U,Node,truss,angles);
+            else
             % =============================================================
-            [IF,K,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold] = ...
-            GlobalK_edu_ver(U,Node,truss,angles,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold,iter,icrm);
+                [IF,K,pstr_p,harden,he_pl_bend,harden_bend,he_pl_fold,harden_fold] = ...
+                GlobalK_edu_ver(U,Node,truss,angles,pstr_p,harden,he_pl_bend,harden_bend,he_pl_fold,harden_fold,iter,icrm);
             % =============================================================
-            % [IF,K] = GlobalK_fast_ver(U,Node,truss,angles);
+            end
             dU = zeros(3*size(Node,1),1);
             dU(FreeDofs) = K(FreeDofs,FreeDofs)\(-IF(FreeDofs));
             err = norm(dU(FreeDofs));
@@ -133,12 +141,14 @@ elseif strcmpi(AnalyInputOpt.LoadType, 'Displacement')
                 mvstepsize = max(mvstepsize*0.9,1);
             end
             Uhis(:,icrm) = U;
+            if strcmpi(AnalyInputOpt.MatType, 'Hyperelastic')
+                [Fend,~]=GlobalK_fast_ver(U,Node,truss,angles);
+            else
             % =============================================================
-            [Fend, ~] = ...
-            GlobalK_edu_ver(U,Node,truss,angles,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold,iter,icrm);
+                [Fend, ~] = ...
+                GlobalK_edu_ver(U,Node,truss,angles,pstr_p,harden,he_pl_bend,harden_bend,he_pl_fold,harden_fold,iter,icrm);
             % =============================================================
-
-            % [Fend,~] = GlobalK_fast_ver(U,Node,truss,angles);
+            end
             Fhis(icrm,:) = -Fend(ImpDofs)'; 
         end
     end
