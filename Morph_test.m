@@ -19,15 +19,18 @@ sec_hor=4;  sec_vert=4;
 a = 2; b = 2; alfa1 = 60; alfa2 = 40.02;
 beta = 40; sgngamma2 = 40;
 % Material-related parameters: Kf-folding stiffness; Kb-bending stiffness;
-Kf = 0.0033; Kb = 0.033; Abar = 2e-5;
+Kf = 0.2; Kb = 2; Abar = 1e-1;
 % E0-stretching stiffness; Abar-bar area (assume uniform)
 limlft = 45; limrht = 315;
 % Elastic Modulus
-EMod = 100000;
+% EMod = 100000;
+EMod = 1e4;
 % Yield force & plastic modulus
 % YBar = 1000000; Ydf = 100000; Ydb = 10000000; 
-YBar = 5000; Ydf = 0.003; Ydb = 0.03; 
-PMod = 100000; pl_mod_fold = 0.0033; pl_mod_bend = 0.033;
+% YBar = 5000; Ydf = 0.003; Ydb = 0.03; 
+% PMod = 100000; pl_mod_fold = 0.0033; pl_mod_bend = 0.033;
+YBar = 200; Ydf = 0.02; Ydb = 0.2;
+PMod = 1000; pl_mod_fold = 0.1; pl_mod_bend = 1;
 % Left and right limits for the linear range of rotational stiffness
 [Node,Panel]=ConfigMorph(sec_hor,sec_vert,a,b,alfa1,alfa2,beta,sgngamma2); 
 
@@ -84,9 +87,9 @@ DIRC = [0, 1, 0];
 % 加载方向
 LoadSize = 0.02;
 % CycleIcrm 是循环加载中一个加载/一个卸载的步骤数
-CycleIcrm = 500;
+CycleIcrm = 80;
 % TotalIcr 是循环加载的总数
-TotalIcr = 500;
+TotalIcr = 80;
 AnalyInputOpt = struct(...
     'ModelType','N4B5',...
     'MaterCalib','manual',... 
@@ -96,7 +99,7 @@ AnalyInputOpt = struct(...
     'Kf',Kf,...
     'RotSprBend', @(he,h0,Kb,L0)EnhancedLinear(he,h0,Kb,L0,30,330),...
     'RotSprFold', @(he,h0,Kf,L0)EnhancedLinear(he,h0,Kf,L0,30,330),...
-    'LoadType','Displacement',...    % Displacement load
+    'LoadType','Force',...    % Displacement load
     'DispStep', TotalIcr);
 
     % 'AdaptiveLoad', @(Node,U,icrm)LoadFunMorph(Node,U,icrm,LoadSize,DIRC,CycleIcrm,sec_hor,sec_vert), ...

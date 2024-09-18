@@ -9,7 +9,7 @@ trial_yield_f = abs(stress_trial) - ( yield_bar + pl_mod * harden );
 if trial_yield_f <= 0
     tau = stress_trial;
     mat_stiff = el_mod;
-    harden = 0;
+    % harden = 0;
 elseif trial_yield_f > 0
     %% Inelastic part of return-mapping algorithm
     % Incremental plastic multiplier:

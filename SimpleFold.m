@@ -15,12 +15,12 @@
 %% =========== MIURA BENDING =========================================== %%
 clear all; close all; clc;
 %% Define geomtry
-Kf = 0.33; Kb = 3.3; Abar = 2e-1;
+Kf = 0.2; Kb = 2; Abar = 1e-1;
 % Elastic Modulus
-EMod = 1.6844e+03;
+EMod = 1e04;
 % Yield force & plastic modulus
-YBar = 80; Ydf = 0.1; Ydb = 0.1; 
-PMod = 200; pl_mod_fold = 0.02; pl_mod_bend = 0.2;
+YBar = 200; Ydf = 0.02; Ydb = 0.2; 
+PMod = 1000; pl_mod_fold = 0.1; pl_mod_bend = 1;
 
 Node = [0, 0, 0;
         0, 2, 0;

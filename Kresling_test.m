@@ -16,14 +16,14 @@
 clear all; close all; clc;
 %% Define geomtry
 % Material-related parameters: Kf-folding stiffness; Kb-bending stiffness;
-Kf = 0.33; Kb = 3.3; Abar = 2e-1;
+Kf = 0.2; Kb = 2; Abar = 1e-1;
 % Elastic Modulus
-EMod = 1.6844e+03;
+EMod = 1e+04;
 % Yield force & plastic modulus
 % YBar = 800000; Ydf = 100000; Ydb = 1000000; % Elastic 
-YBar = 80; Ydf = 0.01; Ydb = 10; % Elasto-Plastic
+YBar = 200; Ydf = 0.02; Ydb = 0.2; % Elasto-Plastic
 % YBar = 80; Ydf = 0.01; Ydb = 10; % Elasto-Plastic
-PMod = 200; pl_mod_fold = 0.02; pl_mod_bend = 0.2;
+PMod = 1000; pl_mod_fold = 0.1; pl_mod_bend = 1;
 
 R0 = 0.036;
 theta0 = 16/18*pi;
@@ -38,9 +38,7 @@ Node = R0*[cos(0), sin(0), 0;
            cos(2*pi/Np+theta0), sin(2*pi/Np+theta0), height0;
            cos(4*pi/Np+theta0), sin(4*pi/Np+theta0), height0;
            cos(6*pi/Np+theta0), sin(6*pi/Np+theta0), height0;];
-Panel = {[1:4];
-         [5:8];
-         [1, 2, 5];
+Panel = {[1, 2, 5];
          [2, 3, 6];
          [3, 4, 7];
          [4, 1, 8];
@@ -109,8 +107,8 @@ for k = 1:size(Uhis,2)
     IntensityDataIntenk = sparse(truss.Bars(:,1),truss.Bars(:,2),abs(IntensityDataM(:,k)),size(truss.Node,1),size(truss.Node,1));
     VIntensityDataInten(:,k) = sum((IntensityDataIntenk+IntensityDataIntenk'),2); 
 end
-% VisualFold(Uhis(:,1:interv:endicrm),truss,angles,-Fhis(1:interv:endicrm,:),instdof,'IntensityMap','Vertex','IntensityData',VIntensityDataInten)
-
+VisualFold(Uhis(:,1:interv:endicrm),truss,angles,-Fhis(1:interv:endicrm,:),instdof,'IntensityMap','Vertex','IntensityData',VIntensityDataInten)
+plot(Uhis(3,:), )
 % VisualFold(Uhis(:,1:interv:endicrm),truss,angles,'none','miura5x5ptd',0.0001,LF_his,instdof,[-inf inf -inf inf])
 % Animation monitoring panel-wise value change
 % VisualFold(Uhis(:,1:10:endicrm),truss,angles,[],[],'IntensityMap','Edge','IntensityData',STAT.bar.Sx(:,1:10:endicrm),'ShowInitial','off')

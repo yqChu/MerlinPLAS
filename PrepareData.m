@@ -167,6 +167,9 @@ elseif strcmpi(AnalyInputOpt.ModelType,'N5B8')
     truss.B = B; 
     truss.L = L;
     truss.FixedDofs = unique(rs);
+    truss.EMod = EMod*ones(1, size(Bars,1));
+    truss.YBar = YBar*ones(1, size(Bars,1));
+    truss.PMod = PMod*ones(1, size(Bars,1));
     angles.fold = Fold;
     angles.bend = Bend;
     angles.pf0 = pf0;

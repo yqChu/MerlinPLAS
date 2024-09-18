@@ -6,7 +6,7 @@ Nodenw(:,2) = Node(:,2)+U(2:3:end);
 Nodenw(:,3) = Node(:,3)+U(3:3:end);
 
 
-LoadSize = 1;
+LoadSize = 0.6;
 %% Define Load here based on icrm and Nodenw
 if icrm<=0
     error('Wrong increment!'); 

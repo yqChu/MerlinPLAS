@@ -30,15 +30,15 @@ limlft = 45; limrht = 315;
 % Left and right limits for the linear range of rotational stiffness
 [Node,Panel,~]=ConfigMiura(sec_hor,sec_vert,theta,a,b,fdang); 
 % Material-related parameters: Kf-folding stiffness; Kb-bending stiffness;
-Kf = 0.1; Kb = Kf*10; EMod = 1e4; Abar = 1e-1;% Parameters in 2017merlin
+Kf = 0.2; Kb = Kf*10; EMod = 1e4; Abar = 1e-1;% Parameters in 2017merlin
 % Kf = 0.33; Kb = 3.3; Abar = 2e-1;% Parameters in YasudaKresling
 % Elastic Modulus
 % EMod = 1.6844e+03;% Parameters in YasudaKresling
 % Yield force & plastic modulus
 % YBar = 500; Ydf = 100000; Ydb = 1000000; 
-YBar = 100; Ydf = 0.08; Ydb = 1; 
+YBar = 200; Ydf = 0.02; Ydb = 0.2; 
 % YBar = 100; Ydf = 0.02; Ydb = 1;
-PMod = 5000; pl_mod_fold = 0.1; pl_mod_bend = 1;
+PMod = 1000; pl_mod_fold = 0.1; pl_mod_bend = 1;
 RotSpring = @(he,h0,kpi,L0)EnhancedLinear(he,h0,kpi,L0,limlft,limrht);
 
 %% Set up boundary conditions
@@ -69,7 +69,7 @@ axis equal
 
 % Simulation options using the N4B5 model
 AnalyInputOpt = struct(...
-    'ModelType','N4B5',...
+    'ModelType','N5B8',...
     'MaterCalib','manual',... 
     'MaxIcr', 300, ...
     'Abar', Abar,...
