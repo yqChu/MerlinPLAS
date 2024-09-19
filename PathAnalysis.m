@@ -36,7 +36,7 @@ if strcmpi(AnalyInputOpt.LoadType, 'Force')
             [IF,K,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold] = ...
             GlobalK_edu_ver(U,Node,truss,angles,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold,iter,icrm);
             % =============================================================
-            % [IF,K] = GlobalK_edu_ver(U,Node,truss,angles);
+            % [IF,K] = GlobalK_fast_ver(U,Node,truss,angles);
             R = lmd*F-IF;   MRS = [F,R];
             MUL(FreeDofs,:) = K(FreeDofs,FreeDofs)\MRS(FreeDofs,:);
             dUp = MUL(:,1); dUr = MUL(:,2);
