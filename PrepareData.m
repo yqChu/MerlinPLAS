@@ -183,7 +183,7 @@ elseif strcmpi(AnalyInputOpt.ModelType,'N5B8')
     MaterCalib = getfieldvalues(AnalyInputOpt,'MaterCalib','auto');
     if strcmpi(MaterCalib,'manual')
         truss.CM = getfieldvalues(AnalyInputOpt,'BarCM',@(Ex)Ogden(Ex, 1e4));
-        
+
         Abar = getfieldvalues(AnalyInputOpt,'Abar',0.1);
         if numel(Abar)==1
             Abar = Abar*ones(size(Bars,1),1);

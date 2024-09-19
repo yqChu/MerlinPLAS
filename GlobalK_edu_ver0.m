@@ -1,4 +1,4 @@
-function [IF,K] = GlobalK_edu_ver(Ui,Node,truss,angles)
+function [IF,K] = GlobalK_edu_ver0(Ui,Node,truss,angles)
 Nn = size(Node,1);
 IFb = zeros(3*Nn,1); IFp = IFb;
 indi = zeros(36*size(truss.Bars,1),1); indj = indi; kentry = indi;

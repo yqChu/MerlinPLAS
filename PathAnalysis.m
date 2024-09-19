@@ -102,7 +102,7 @@ elseif strcmpi(AnalyInputOpt.LoadType, 'Displacement')
             [IF,K,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold] = ...
             GlobalK_edu_ver(U,Node,truss,angles,state1,state2,state1_bend,state2_bend,state1_fold,state2_fold,iter,icrm);
             % =============================================================
-            % [IF,K] = GlobalK_fast_ver(U,Node,truss,angles);
+            % [IF,K] = GlobalK_edu_ver0(U,Node,truss,angles);
             dU = zeros(3*size(Node,1),1);
             dU(FreeDofs) = K(FreeDofs,FreeDofs)\(-IF(FreeDofs));
             err = norm(dU(FreeDofs));
