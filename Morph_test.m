@@ -85,11 +85,11 @@ end
 % Simulation options using the N4B5 model
 DIRC = [0, 1, 0];
 % 加载方向
-LoadSize = 0.011;
+LoadSize = 0.01;
 % CycleIcrm 是循环加载中一个加载/一个卸载的步骤数
-CycleIcrm = 800;
+CycleIcrm = 900;
 % TotalIcr 是循环加载的总数
-TotalIcr = 1200;
+TotalIcr = 1400;
 AnalyInputOpt = struct(...
     'ModelType','N4B5',...
     'MaterCalib','manual',... 
