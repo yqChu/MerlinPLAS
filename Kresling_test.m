@@ -25,27 +25,35 @@ YBar = 200; Ydf = 0.02; Ydb = 0.2; % Elasto-Plastic
 % YBar = 80; Ydf = 0.01; Ydb = 10; % Elasto-Plastic
 PMod = 1000; pl_mod_fold = 0.1; pl_mod_bend = 1;
 
-R0 = 0.036;
-theta0 = 16/18*pi;
-height0 = 0.04;
+R0 = 1;
+theta0 = 11/18*pi;
+height0 = 1;
 height0 = height0/R0;
-Np = 4;
+Np = 6;
 Node = R0*[cos(0), sin(0), 0;
            cos(2*pi/Np), sin(2*pi/Np), 0;
            cos(4*pi/Np), sin(4*pi/Np), 0;
            cos(6*pi/Np), sin(6*pi/Np), 0;
+           cos(8*pi/Np), sin(8*pi/Np), 0;
+           cos(10*pi/Np), sin(10*pi/Np), 0;
            cos(0+theta0), sin(0+theta0), height0;
            cos(2*pi/Np+theta0), sin(2*pi/Np+theta0), height0;
            cos(4*pi/Np+theta0), sin(4*pi/Np+theta0), height0;
-           cos(6*pi/Np+theta0), sin(6*pi/Np+theta0), height0;];
-Panel = {[1, 2, 5];
-         [2, 3, 6];
-         [3, 4, 7];
-         [4, 1, 8];
-         [5, 6, 2];
-         [6, 7, 3];
-         [7, 8, 4];
-         [8, 5, 1];};
+           cos(6*pi/Np+theta0), sin(6*pi/Np+theta0), height0;
+           cos(8*pi/Np+theta0), sin(8*pi/Np+theta0), height0;
+           cos(10*pi/Np+theta0), sin(10*pi/Np+theta0), height0;];
+Panel = {[1, 2, 7];
+         [2, 3, 8];
+         [3, 4, 9];
+         [4, 5, 10];
+         [5, 6, 11];
+         [6, 1, 12];
+         [7, 8, 2];
+         [8, 9, 3];
+         [9, 10, 4];
+         [10, 11, 5];
+         [11, 12, 6];
+         [12, 7, 1]};
 
 % Visualize initial configuration 
 figure()
@@ -62,12 +70,14 @@ m = size(Node,1);
 Supp = [1, 1, 1, 1;
         2, 1, 1, 1;
         3, 1, 1, 1;
-        4, 1, 1, 1;];
+        4, 1, 1, 1;
+        5, 1, 1, 1;
+        6, 1, 1, 1;];
 Load = [ 5, 0, 0, 1;
          6, 0, 0, 1;
          7, 0, 0, 1;
          8, 0, 0, 1];
-indp = 5;
+indp = 7;
 
 %% Define material and modeling parameters
 
@@ -75,7 +85,7 @@ indp = 5;
 AnalyInputOpt = struct(...
     'ModelType','N4B5',...
     'MaterCalib','manual',... 
-    'MaxIcr', 2000, ...
+    'MaxIcr', 1000, ...
     'Abar', Abar,...
     'Kb',Kb,...
     'Kf',Kf,...
@@ -83,7 +93,7 @@ AnalyInputOpt = struct(...
     'RotSprFold', @(he,h0,Kf,L0)EnhancedLinear(he,h0,Kf,L0,30,330),...
     'LoadType','Displacement',...    % Displacement load
     'AdaptiveLoad',@LoadFunKresling,...
-    'DispStep', 2000);
+    'DispStep', 1000);
 
 %% Perform analysis
 % Assemble input data
@@ -108,7 +118,6 @@ for k = 1:size(Uhis,2)
     VIntensityDataInten(:,k) = sum((IntensityDataIntenk+IntensityDataIntenk'),2); 
 end
 VisualFold(Uhis(:,1:interv:endicrm),truss,angles,-Fhis(1:interv:endicrm,:),instdof,'IntensityMap','Vertex','IntensityData',VIntensityDataInten)
-plot(Uhis(3,:), )
 % VisualFold(Uhis(:,1:interv:endicrm),truss,angles,'none','miura5x5ptd',0.0001,LF_his,instdof,[-inf inf -inf inf])
 % Animation monitoring panel-wise value change
 % VisualFold(Uhis(:,1:10:endicrm),truss,angles,[],[],'IntensityMap','Edge','IntensityData',STAT.bar.Sx(:,1:10:endicrm),'ShowInitial','off')
